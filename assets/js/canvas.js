@@ -13,8 +13,11 @@ const canvasInit = function() {
         setInterval(update, 25);
 
         const temp = [];
-        for (var i = 0; i < 200; i += 2) {
-            temp.push(i < 100 ? 300 : -300);
+        for (var i = -225; i < 225; i += 2) {
+            temp.push([i, -225]);
+        }
+        for (var i = -225; i < 225; i += 2) {
+            temp.push([i, 225]);
         }
 
         series = fourier.distTransform(temp);
@@ -31,6 +34,7 @@ const canvasInit = function() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         ctx.strokeStyle = "#FFF";
+        ctx.lineWidth = 1;
         ctx.beginPath();
         for (var i = 0; i < series.length; i++) {
             const [freq, mod, arg] = series[i];
@@ -38,8 +42,8 @@ const canvasInit = function() {
 
             circles.push([oldX, oldY, mod]);
             
-            sX += mod * Math.cos(freq * time + arg + Math.PI * 0.5);
-            sY += mod * Math.sin(freq * time + arg + Math.PI * 0.5);
+            sX += mod * Math.cos(freq * time + arg);
+            sY += mod * Math.sin(freq * time + arg);
 
             ctx.moveTo(oldX, oldY);
             ctx.lineTo(sX, sY);
@@ -54,16 +58,16 @@ const canvasInit = function() {
         });
 
         ctx.strokeStyle = "#FFF"
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(sX, sY);
         for (var i = 0; i < record.length; i++) {
-            ctx.lineTo(midX + i * 2.5, record[i] + midY);
+            ctx.lineTo(record[i][0] + midX, record[i][1] + midY);
         }
         ctx.stroke();
 
-        record.unshift(sY - midY);
-        if (record.length > 300) record.pop();
+        record.unshift([sX - midX, sY - midY]);
+        if (record.length > Math.max(40, series.length - 20)) record.pop();
 
         // offset by period
         time += Math.PI * 2 / series.length * 1;
