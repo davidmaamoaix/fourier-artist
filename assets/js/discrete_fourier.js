@@ -4,7 +4,7 @@ const fourier = {
         const N = signals.length;
         const freq = [];
 
-        for (var k = 0; k < freqSize; k++) {
+        for (var k = 0; k < N; k++) {
             let [re, im] = [0, 0];
             for (var n = 0; n < N; n++) {
                 const inner = 2 * Math.PI * k * n / N;
@@ -16,7 +16,10 @@ const fourier = {
             re /= N;
             im /= N;
 
-            freq.push([Math.sqrt(re * re + im * im), Math.atan2(im, re)]);
+            freq.push([
+                Math.sqrt(re * re + im * im),
+                Math.atan2(im, re)
+            ]);
         }
 
         return freq;
