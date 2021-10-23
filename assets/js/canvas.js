@@ -1,4 +1,4 @@
-//const canvas = function() {
+const canvasInit = function() {
     var ctx;
     var time = 0;
     var series = [];
@@ -10,13 +10,12 @@
         canvas.height = window.innerHeight;
 
         ctx = canvas.getContext("2d");
-        ctx.strokeStyle = "#FFF";
         // window.requestAnimationFrame(update);
         setInterval(update, 25);
 
         const temp = [];
-        for (var i = 0; i < 25; i++) {
-            temp.push(i * 10);
+        for (var i = 0; i < 200; i += 2) {
+            temp.push((i * 3) - 300);
         }
 
         series = fourier.distTransform(temp);
@@ -30,10 +29,12 @@
     function draw() {
         if (series.length === 0) return;
 
-        const midX = canvas.width / 2;
+        const [midX, midY] = [canvas.width / 2, canvas.height / 2];
+        let [sX, sY] = [canvas.width / 2, canvas.height / 2];
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        let [sX, sY] = [canvas.width / 2, canvas.height / 2];
+        ctx.strokeStyle = "#FFF";
         ctx.beginPath();
         for (var i = 0; i < series.length; i++) {
             const [mod, arg] = series[i];
@@ -49,12 +50,12 @@
 
         ctx.beginPath();
         ctx.moveTo(sX, sY);
-        for (var i = 0; i < record.length; i++) {         
-            ctx.lineTo(midX + i * 10, record[i]);
+        for (var i = 0; i < record.length; i++) {
+            ctx.lineTo(midX + i * 2.5, record[i] + midY);
         }
         ctx.stroke();
 
-        record.unshift(sY);
+        record.unshift(sY - midY);
         if (record.length > 300) record.pop();
 
         // offset by period
@@ -62,4 +63,8 @@
     }
 
     window.onload = start;
-//}();
+    window.onresize = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    };
+}();
