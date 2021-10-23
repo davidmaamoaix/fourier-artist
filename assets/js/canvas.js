@@ -10,26 +10,22 @@ const canvasInit = function() {
         canvas.height = window.innerHeight;
 
         ctx = canvas.getContext("2d");
-        // window.requestAnimationFrame(update);
         setInterval(update, 25);
 
         const temp = [];
         for (var i = 0; i < 200; i += 2) {
-            temp.push((i * 3) - 300);
+            temp.push(i < 100 ? 300 : -300);
         }
 
         series = fourier.distTransform(temp);
+        series.sort((a, b) => b[1] - a[1]);
     }
 
     function update() {
-        draw();
-        // window.requestAnimationFrame(update);
-    }
-
-    function draw() {
         if (series.length === 0) return;
 
         const [midX, midY] = [canvas.width / 2, canvas.height / 2];
+        const circles = [];
         let [sX, sY] = [canvas.width / 2, canvas.height / 2];
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -37,17 +33,28 @@ const canvasInit = function() {
         ctx.strokeStyle = "#FFF";
         ctx.beginPath();
         for (var i = 0; i < series.length; i++) {
-            const [mod, arg] = series[i];
+            const [freq, mod, arg] = series[i];
             const [oldX, oldY] = [sX, sY];
+
+            circles.push([oldX, oldY, mod]);
             
-            sX += mod * Math.cos(i * time + arg + Math.PI * 0.5);
-            sY += mod * Math.sin(i * time + arg + Math.PI * 0.5);
+            sX += mod * Math.cos(freq * time + arg + Math.PI * 0.5);
+            sY += mod * Math.sin(freq * time + arg + Math.PI * 0.5);
 
             ctx.moveTo(oldX, oldY);
             ctx.lineTo(sX, sY);
         }
         ctx.stroke();
 
+        ctx.strokeStyle = "#777";
+        circles.forEach(i => {
+            ctx.beginPath();
+            ctx.arc(...i, 0, 2 * Math.PI, false);
+            ctx.stroke();
+        });
+
+        ctx.strokeStyle = "#FFF"
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(sX, sY);
         for (var i = 0; i < record.length; i++) {
@@ -59,7 +66,7 @@ const canvasInit = function() {
         if (record.length > 300) record.pop();
 
         // offset by period
-        time += Math.PI * 2 / series.length;
+        time += Math.PI * 2 / series.length * 1;
     }
 
     window.onload = start;

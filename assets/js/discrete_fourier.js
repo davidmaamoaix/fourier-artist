@@ -12,6 +12,7 @@ const fourier = {
         im /= signals.length;
 
         return [
+            k,
             Math.sqrt(re * re + im * im),
             Math.atan2(im, re)
         ];
