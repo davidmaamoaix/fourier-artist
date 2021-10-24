@@ -15,10 +15,14 @@ const canvasInit = function() {
         canvas.height = window.innerHeight;
 
         canvas.addEventListener("mousedown", e => {
+            if (e.button !== 0) return;
+
             drawPath = [];
             mouseDown = true;
         });
         canvas.addEventListener("mouseup", e => {
+            if (e.button !== 0) return;
+
             mouseDown = false;
             series = fourier.distTransform(drawPath);
             series.sort((a, b) => b[1] - a[1]);
@@ -124,7 +128,7 @@ const canvasInit = function() {
         ctx.stroke();
 
         record.unshift([sX - midX, sY - midY]);
-        if (record.length > Math.max(40, series.length - 20)) record.pop();
+        if (record.length > series.length * 0.9) record.pop();
 
         // offset by period
         // negate to match the draw order
