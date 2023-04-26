@@ -17,9 +17,10 @@ const canvasInit = function() {
         canvas.addEventListener("mousedown", e => {
             if (e.button !== 0) return;
 
-            drawPath = [];
             mouseDown = true;
+            drawPath = [];
         });
+
         canvas.addEventListener("mouseup", e => {
             if (e.button !== 0) return;
 
@@ -30,6 +31,7 @@ const canvasInit = function() {
             record = [];
             time = 0;
         });
+
         canvas.addEventListener("mousemove", e => {
             const rect = canvas.getBoundingClientRect();
             mousePos = [
@@ -37,6 +39,35 @@ const canvasInit = function() {
                 e.clientY - rect.top - canvas.height / 2
             ];
         });
+
+        canvas.addEventListener("touchstart", e => {
+            var rect = canvas.getBoundingClientRect();
+
+            drawPath = [];
+            mouseDown = true;
+            mousePos = [
+                e.touches[0].clientX - rect.left - canvas.width / 2,
+                e.touches[0].clientY - rect.top - canvas.height / 2
+            ];
+        }, false);
+
+        canvas.addEventListener("touchend", e => {
+            mouseDown = false;
+            series = fourier.distTransform(drawPath);
+            series.sort((a, b) => b[1] - a[1]);
+
+            record = [];
+            time = 0;
+        }, false);
+
+        canvas.addEventListener("touchmove", e => {
+            const rect = canvas.getBoundingClientRect();
+            mousePos = [
+                e.touches[0].clientX - rect.left - canvas.width / 2,
+                e.touches[0].clientY - rect.top - canvas.height / 2
+            ];
+        }, false);
+
         window.addEventListener("keydown", e => {
             if (event.keyCode === 32) {
                 showLine = !showLine;
